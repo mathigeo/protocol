@@ -272,11 +272,29 @@ void protocol(uint8_t temp)
  */
 void USART1_IRQHandler(void)
 {
+	static uint8_t status = 0;
 	uint8_t temp;
 	
-	if (USART_GetITStatus(USART1,USART_IT_RXNE)!=RESET) 
+	if(USART_GetITStatus(USART1,USART_IT_RXNE)!=RESET) 
 	{
 		temp = USART_ReceiveData(USART1);
-		protocol(temp);
+		//空闲状态
+		if(status == 0)
+		{
+			//如果接收到0X66请求(通信请求)
+			if(temp == 0X66)
+			{
+				//回复0X99作为应答
+				while((USART1->SR&0X40)==0);
+				USART1->DR = (u8)(0X99);	
+				//换到接收态
+				status = 1;				
+			}
+		}
+		//工作状态
+		else
+		{
+			protocol(temp);
+		}
 	}
 }

@@ -13,7 +13,7 @@ int main(void)
 	
 	while(1)
 	{
-		OLED_Print(3,1,"%3d",READ_COM(short,comBuf));
+		OLED_Print(1,1,"%6.2f",READ_COM(float,comBuf));
 	} 
 }
 
